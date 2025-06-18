@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SendHorizonal, Paperclip } from 'lucide-react';
 import { io } from 'socket.io-client';
-require('dotenv').config();
 
 const socket = io(process.env.BACKEND_URL);
 
