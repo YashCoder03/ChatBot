@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SendHorizonal, Paperclip } from 'lucide-react';
 import { io } from 'socket.io-client';
 
-const socket = io(process.env.BACKEND_URL);
+const socket = io("https://chatbot-xssm.onrender.com", {
+  transports: ["websocket"],
+});
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([

@@ -13,7 +13,7 @@ exports.handleSocketConnection = (socket) => {
 
     try {
       const result = await mistral.invoke(message);
-    //   console.log(result.content);
+      console.log(result.content);
       socket.emit("bot_message", { reply: result.content });
     } catch (error) {
       console.error("MistralAI Error:", error);
