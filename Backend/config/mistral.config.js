@@ -1,5 +1,5 @@
-const { ChatMistralAI } = require("@langchain/mistralai");
-require("dotenv").config();
+import { ChatMistralAI } from "@langchain/mistralai";
+
 
 const mistral = new ChatMistralAI({
   apiKey: process.env.MISTRAL_API_KEY,
@@ -7,4 +7,4 @@ const mistral = new ChatMistralAI({
   temperature: 0.7,
 });
 
-module.exports = mistral;
+export default mistral;

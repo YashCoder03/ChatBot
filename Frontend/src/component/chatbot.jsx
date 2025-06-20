@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SendHorizonal, Paperclip } from 'lucide-react';
 import { io } from 'socket.io-client';
 
-const socket = io("https://chatbot-xssm.onrender.com", {
+// const URL = "http://localhost:5000";
+// const socket = io(URL, {
+//   transports: ["websocket"],
+// });
+const socket = io(process.env.BACKEND_URL, {
   transports: ["websocket"],
 });
 
@@ -12,7 +16,6 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState('');
   const chatEndRef = useRef(null);
-
   useEffect(() => {
     socket.on('bot_message', (data) => {
         console.log(data)
@@ -25,6 +28,7 @@ export default function Chatbot() {
   }, []);
 
   const sendMessage = () => {
+      console.log(process.env)
     if (!input.trim()) return;
     setMessages((prev) => [...prev, { sender: 'user', text: input }]);
     socket.emit('user_message', input);
@@ -35,17 +39,26 @@ export default function Chatbot() {
     if (e.key === 'Enter') sendMessage();
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file && file.type === 'application/pdf') {
       setMessages((prev) => [...prev, { sender: 'user', text: `📄 Sent file: ${file.name}` }]);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileData = reader.result;
-        socket.emit('pdf_upload', { name: file.name, data: fileData });
-      };
-      reader.readAsDataURL(file);
+       const formData = new FormData();
+        formData.append('pdf', file);
+        formData.append("socketId", socket.id);
+
+        try {
+          const res = await fetch(`${process.env.BACKEND_URL}/api/upload`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          // const data = await res.json();
+          console.log('✅ PDF uploaded:');
+    } catch (err) {
+      console.error('❌ Upload failed', err);
+    }
     } else {
       alert('Only PDF files are allowed!');
     }
