@@ -73,7 +73,7 @@ export default function Chatbot() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="flex flex-col w-full max-w-3xl h-[700px] border border-gray-700 rounded-2xl shadow-lg bg-gray-800 overflow-hidden">
-        <div className="p-4 font-bold text-lg bg-blue-700 text-white">Chatbot (WebSocket)</div>
+        <div className="p-4 font-bold text-lg bg-blue-700 text-white">Chatbot</div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900 text-white">
           {messages.map((msg, idx) => (
