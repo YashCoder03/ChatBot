@@ -1,4 +1,6 @@
-exports.handleMessage = (req, res) => {
+import processPDF from "../langchain/processPipeline.js";
+
+const handleMessage = (req, res) => {
   const { message } = req.body;
   console.log('REST message:', message);
 
@@ -6,9 +8,17 @@ exports.handleMessage = (req, res) => {
   res.json({ reply });
 };
 
-exports.handleUpload = (req, res) => {
+const handleUpload = (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
   console.log(`PDF uploaded: ${req.file.filename}`);
+
+  processPDF(req.file.path);
+
   res.json({ reply: `Received file: ${req.file.originalname}` });
 };
+
+export {
+  handleMessage,
+  handleUpload
+}

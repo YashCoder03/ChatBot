@@ -1,11 +1,11 @@
-const express = require('express');
-const { handleMessage, handleUpload } = require('../controllers/chat.controller');
-const upload = require('../utils/multer.config');
+import express from "express";
+import { handleMessage, handleUpload } from "../controllers/chat.controller.js"
+import upload from '../utils/multer.config.js';
 
 const router = express.Router();
 
 router.post('/message', handleMessage);
-router.post('/upload', upload.single('file'), handleUpload);
+router.post('/upload', upload.single('pdf'), handleUpload);
 
-module.exports = router;
+export default router;
     

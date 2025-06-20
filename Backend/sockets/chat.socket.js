@@ -1,6 +1,6 @@
-const mistral = require("../config/mistral.config");
+import mistral from "../config/mistral.config.js"
 
-exports.handleSocketConnection = (socket) => {
+const handleSocketConnection = (socket) => {
     console.log('✅ A client connected:', socket.id);
   socket.on("user_message", async (data) => {
     const message  = data;
@@ -25,3 +25,5 @@ exports.handleSocketConnection = (socket) => {
     console.log(`🔴 Client disconnected: ${socket.id}`);
   });
 };
+
+export default handleSocketConnection;

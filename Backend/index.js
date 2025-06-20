@@ -1,7 +1,7 @@
-const http = require('http');
-const { Server } = require('socket.io');
-const app = require('./app');
-const { handleSocketConnection } = require('./sockets/chat.socket');
+import http from "http";
+import {Server} from "socket.io";
+import app from "./app.js"
+import handleSocketConnection  from "./sockets/chat.socket.js";
 
 const server = http.createServer(app);
 const io = new Server(server, {
