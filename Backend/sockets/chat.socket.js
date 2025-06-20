@@ -12,11 +12,10 @@ const   handleSocketConnection = (socket) => {
       socket.emit("bot_message", { reply: "Message is required!" });
       return;
     }
-
+    console.log(message);
     try {
       const result= await getAnswer(message,socket.id);
       // const result = await mistral.invoke(message);
-      console.log(result);
       socket.emit("bot_message", { reply: result });
     } catch (error) {
       console.error("MistralAI Error:", error);
