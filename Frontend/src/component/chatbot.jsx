@@ -3,7 +3,7 @@ import { SendHorizonal, Paperclip } from 'lucide-react';
 import { io } from 'socket.io-client';
 
 // const URL = "http://localhost:5000";
-const URL = "https://chatbot-production-2562.up.railway.app/";
+const URL = "https://chatbot-production-2562.up.railway.app";
 
 // const socket = io(URL, {
 //   transports: ["websocket"],
