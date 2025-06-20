@@ -1,12 +1,15 @@
-import mistral from "../../config/mistralembedding.config.js";
+import mistralembedding from "../../config/mistralembedding.config.js";
 
-const embedder = async(chunks) => {
+const embedder = async(chunks,socketId) => {
     const texts = chunks.map(doc => doc.pageContent);
     
-    const vectors = await mistral.embedDocuments(texts);
+    const vectors = await mistralembedding.embedDocuments(texts);
     console.log(vectors[0]);
     return chunks.map((doc, i) => ({
-        metadata: doc.metadata || {},
+        metadata: {
+            ...doc.metadata,
+            socketId,
+        },
         content: doc.pageContent,
         embedding: vectors[i],
     }));

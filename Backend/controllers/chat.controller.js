@@ -13,7 +13,7 @@ const handleUpload = (req, res) => {
 
   console.log(`PDF uploaded: ${req.file.filename}`);
 
-  processPDF(req.file.path);
+  processPDF(req.file.path,req.body.socketId);
 
   res.json({ reply: `Received file: ${req.file.originalname}` });
 };

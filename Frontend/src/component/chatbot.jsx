@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SendHorizonal, Paperclip } from 'lucide-react';
 import { io } from 'socket.io-client';
 
-const URL = "http://localhost:5000";
-const socket = io(URL, {
-  transports: ["websocket"],
-});
-// const socket = io(process.env.BACKEND_URL, {
+// const URL = "http://localhost:5000";
+// const socket = io(URL, {
 //   transports: ["websocket"],
 // });
+const socket = io(process.env.BACKEND_URL, {
+  transports: ["websocket"],
+});
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
@@ -46,9 +46,10 @@ export default function Chatbot() {
 
        const formData = new FormData();
         formData.append('pdf', file);
+        formData.append("socketId", socket.id);
 
         try {
-          const res = await fetch(`${URL}/api/upload`, {
+          const res = await fetch(`${process.env.BACKEND_URL}/api/upload`, {
             method: 'POST',
             body: formData,
           });

@@ -4,10 +4,11 @@ const storeInPinecone = async(docsWithVectors) => {
     const pineconeIndex = pc.Index(process.env.PINECONE_INDEX_NAME);
     const vectors = docsWithVectors.map((doc, i) => ({
         id: `chunk-${Date.now()}-${i}`,
-        values: doc.embedding, // should be an array of numbers
+        values: doc.embedding, 
         metadata: {
-            content: doc.content || '', // ensure it's a plain string
-            source: doc.metadata?.source || '', // optional but useful
+            content: doc.content || '', 
+            source: doc.metadata?.source || '',
+            socketId : doc.metadata.socketId  || ''
         },
     }));
     console.log(JSON.stringify(vectors[0]));
