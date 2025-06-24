@@ -6,6 +6,8 @@ import getDocument from "../langchain/vectorstores/pincecone.retriver.js";
 import { getSessionHistory } from "./history.handler.js";
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { getBaseChain } from "../langchain/chain/basic.chain.js";
+import { LLM } from "@langchain/core/language_models/llms";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 export const classifyMessage = async (question) => {
   
@@ -13,14 +15,36 @@ export const classifyMessage = async (question) => {
   const io = getIO();
   const id = io.id;
   const vectorData =await getDocument(questionEmbedding,id);
-  const hasRelevantMatch = vectorData.matches.some((match) => match.score > 0.55 && match.metadata?.content);
   
-  const classifierPrompt = `Classify this user question:
-    Question: "${question}"
-    Context: "${vectorData?.metadata?.content || ''}"
+  const classifierPrompt = ChatPromptTemplate.fromTemplate(`
+    You are a classifier that decides whether a user's question is about a specific PDF document or a general chat question.
 
-    Does this question relate to the context? Reply with "PDF" or "CHAT".`;
-    if(hasRelevantMatch) {return "PDF"} else {"CHAT";}
+    Instructions:
+    - If the question is asking about information that could be found in the provided context (from the PDF), respond with exactly "PDF".
+    - If the question is general, casual, or unrelated to the context, respond with exactly "CHAT".
+
+    Question: {question}
+
+    Context:
+    {context}
+
+    Respond with only one word: "PDF" or "CHAT".
+  `);
+  const context = vectorData.matches
+  .map((m) => m.metadata?.content || "")
+  .join("\n\n")
+  .slice(0, 3000);
+
+    const classifierChain = RunnableSequence.from([
+      classifierPrompt,
+      mistral,
+      new StringOutputParser()
+    ]);
+    const result = await classifierChain.invoke({
+      question: question,
+      context: context,
+    });
+    return result;
 };
 
 export const handleGeneralQuestion = async (message,socketId) => {
