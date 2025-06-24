@@ -1,6 +1,7 @@
 import mistral from "../config/mistral.config.js"
 import getAnswer from "../langchain/chain/qa.chain.js";
 import deleteRecordsBySocketID from "../langchain/vectorstores/pineconde.delete.js";
+import { handleGeneralQuestion,classifyMessage } from "../handler/message.handler.js";
 
 const chatHandlers = (socket) => {
     console.log('✅ A client connected:', socket.id);
@@ -14,7 +15,13 @@ const chatHandlers = (socket) => {
     }
     console.log(message);
     try {
-      const result= await getAnswer(message,socket.id);
+      let result ;
+      const type = await classifyMessage(message);
+      if (type === "PDF") {
+        result = await getAnswer(message,socket.id);
+      } else {
+        result = await  handleGeneralQuestion(message,socket.id);
+      }
       // const result = await mistral.invoke(message);
       socket.emit("bot_message", { reply: result });
     } catch (error) {
@@ -27,6 +34,10 @@ const chatHandlers = (socket) => {
     console.log(await deleteRecordsBySocketID(socket.id));
     console.log(`🔴 Client disconnected: ${socket.id}`);
   });
+};
+
+const isPDFQuestion = (question) => {
+  return question.toLowerCase().includes("pdf") || question.includes("document");
 };
 
 export default chatHandlers;
