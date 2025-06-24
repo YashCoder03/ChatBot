@@ -2,9 +2,9 @@ import mistral from "../config/mistral.config.js"
 import getAnswer from "../langchain/chain/qa.chain.js";
 import deleteRecordsBySocketID from "../langchain/vectorstores/pineconde.delete.js";
 
-const   handleSocketConnection = (socket) => {
+const chatHandlers = (socket) => {
     console.log('✅ A client connected:', socket.id);
-  socket.on("user_message", async (data) => {
+    socket.on("user_message", async (data) => {
     const message  = data;
     // console.log("message is =>" + data);
 
@@ -29,4 +29,4 @@ const   handleSocketConnection = (socket) => {
   });
 };
 
-export default handleSocketConnection;
+export default chatHandlers;
