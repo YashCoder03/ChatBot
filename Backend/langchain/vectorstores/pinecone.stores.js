@@ -11,7 +11,6 @@ const storeInPinecone = async(docsWithVectors) => {
             socketId : doc.metadata.socketId  || ''
         },
     }));
-    console.log(JSON.stringify(vectors[0]));
     await pineconeIndex.upsert(vectors);
 }
 
