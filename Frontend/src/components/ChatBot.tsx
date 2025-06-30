@@ -114,7 +114,7 @@ export default function Chatbot() {
               <div
                 className={`px-4 py-2 rounded-2xl max-w-[70%] break-words ${msg.sender === 'user'
                   ? 'bg-orange-600 text-white '
-                  : `bg-${isDark ? 'gray-700'  : '[#867d7d]'} text-white`
+                  : `${isDark ? 'bg-gray-700'  : 'bg-[#867d7d]'} text-white`
                   }`}
               >
                 {msg.text}
