@@ -4,7 +4,9 @@ import { io } from 'socket.io-client';
 import { MdOutlineDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 
-const URL = "https://chatbot-production-2562.up.railway.app";
+
+// const URL = "https://chatbot-production-2562.up.railway.app";
+const URL = "http://localhost:5000";
 
 const socket = io(URL, {
   transports: ["websocket"],

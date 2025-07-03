@@ -9,11 +9,10 @@ import { getBaseChain } from "../langchain/chain/basic.chain.js";
 import { LLM } from "@langchain/core/language_models/llms";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 
-export const classifyMessage = async (question) => {
+export const classifyChain = async (question,id) => {
   
+  console.log(question);
   const questionEmbedding = await mistralembedding.embedQuery(question);
-  const io = getIO();
-  const id = io.id;
   const vectorData =await getDocument(questionEmbedding,id);
   
   const classifierPrompt = ChatPromptTemplate.fromTemplate(`
@@ -44,17 +43,18 @@ export const classifyMessage = async (question) => {
       question: question,
       context: context,
     });
+    console.log(result);
     return result;
 };
 
-export const handleGeneralQuestion = async (message,socketId) => {
-  const MemoryWrappedChain = getMemoryWrappedChain(socketId);
-
-  const answer = await MemoryWrappedChain.invoke({ input: message }, { configurable: { sessionId: socketId } });
+export const handleGeneralQuestion = async (message,id) => {
+  const MemoryWrappedChain = getMemoryWrappedChain(id);
+  
+  const answer = await MemoryWrappedChain.invoke({ input: message }, { configurable: { sessionId: id } });
   return answer;
 };
 
-const getMemoryWrappedChain = (socketId) => {
+export const getMemoryWrappedChain = (socketId) => {
   const baseChain = getBaseChain();
   return new RunnableWithMessageHistory({
     runnable: baseChain,

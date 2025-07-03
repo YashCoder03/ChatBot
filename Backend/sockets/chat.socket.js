@@ -1,7 +1,8 @@
 import mistral from "../config/mistral.config.js"
 import getAnswer from "../langchain/chain/qa.chain.js";
 import deleteRecordsBySocketID from "../langchain/vectorstores/pineconde.delete.js";
-import { handleGeneralQuestion,classifyMessage } from "../handler/message.handler.js";
+import { handleGeneralQuestion,classifyChain } from "../handler/message.handler.js";
+import { classifyAgent } from "../langchain/agent/classify.agent.js";
 
 const chatHandlers = (socket) => {
     console.log('✅ A client connected:', socket.id);
@@ -15,15 +16,16 @@ const chatHandlers = (socket) => {
     }
     console.log(message);
     try {
-      let result ;
-      const type = await classifyMessage(message);
-      if (type === "PDF") {
-        result = await getAnswer(message,socket.id);
-      } else {
-        result = await  handleGeneralQuestion(message,socket.id);
-      }
+      const reply = await classifyAgent(message,socket.id);
+      // let result ;
+      // const type = await classifyMessage(message);
+      // if (type === "PDF") {
+      //   result = await getAnswer(message,socket.id);
+      // } else {
+      //   result = await  handleGeneralQuestion(message,socket.id);
+      // }
       // const result = await mistral.invoke(message);
-      socket.emit("bot_message", { reply: result });
+      socket.emit("bot_message", { reply: reply });
     } catch (error) {
       console.error("MistralAI Error:", error);
       socket.emit("bot_message", { reply: "⚠️ Something went wrong with the AI" });

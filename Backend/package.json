@@ -14,16 +14,20 @@
   "dependencies": {
     "@langchain/community": "^0.3.46",
     "@langchain/core": "^0.3.59",
+    "@langchain/langgraph": "^0.3.6",
     "@langchain/mistralai": "^0.2.1",
     "@langchain/textsplitters": "^0.1.0",
     "@pinecone-database/pinecone": "^6.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "kiteconnect": "^5.0.1",
     "langchain": "^0.3.28",
     "multer": "^2.0.1",
     "pdf-parse": "^1.1.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "upstox-js-sdk": "^2.18.0",
+    "zod": "^3.25.68"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
