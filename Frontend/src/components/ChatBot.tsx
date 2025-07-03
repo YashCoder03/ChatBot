@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { MdOutlineDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import SideBar from './SideBar';
+import type ChatState from '../interfaces/chats';
 
 const URL = "https://chatbot-production-2562.up.railway.app";
 
@@ -11,18 +12,31 @@ const socket = io(URL, {
   transports: ["websocket"],
 });
 
+const defaultMessage: ChatState = {
+  activeChatId: "chat1",
+  chats: {
+    chat1: [
+      {
+        sender: 'bot',
+        text: 'Hello! How can I help you today?',
+        time: Date.now(),
+      }
+    ]
+  }
+}
+
 export default function Chatbot() {
 
   const [isDark, setIsDark] = useState(
     () => localStorage.theme === "dark" ||
       (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
   );
-  const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Hello! How can I help you today?' },
-  ]);
+  const [messages, setMessages] = useState(defaultMessage);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<any>(null);
+  const [activeChat, setActiveChat] = useState(messages.activeChatId);
+
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -41,7 +55,20 @@ export default function Chatbot() {
         alert('App Crashed');
       }
       setLoading(false);
-      setMessages((prev) => [...prev, { sender: 'bot', text: data.reply }]);
+      setMessages((prev) => ({
+        ...prev, chats: {
+          ...prev.chats,
+          [prev.activeChatId]: [
+            ...prev.chats[prev.activeChatId],
+            {
+              sender: 'bot',
+              text: data.reply,
+              time: Date.now()
+            }
+          ]
+        }
+      })
+      );
     });
 
     return () => {
@@ -49,13 +76,61 @@ export default function Chatbot() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("new everytime", messages);
+
+  })
+
   const sendMessage = () => {
     if (!input.trim()) return;
-    setMessages((prev) => [...prev, { sender: 'user', text: input }]);
+    setMessages((prev) => ({
+      ...prev, chats: {
+        ...prev.chats,
+        [prev.activeChatId]: [
+          ...prev.chats[prev.activeChatId],
+          {
+            sender: 'user',
+            text: input, time: Date.now()
+          }
+        ]
+      }
+    })
+    );
     socket.emit('user_message', input);
     setLoading(true);
+    console.log("messagessss", messages);
+
     setInput('');
   };
+
+  const addNewChat = () => {
+    console.log("new chat clicked from chatbot ")
+
+    setMessages((prev) => {
+      const newChatId = `chat${Object.keys(prev.chats).length + 1}`;
+      return {
+        ...prev,
+        activeChatId: newChatId,
+        chats: {
+          ...prev.chats,
+          [newChatId]: [
+            {
+              sender: "bot",
+              text: "Hello! How can I help you today?",
+              time: Date.now(),
+            },
+          ],
+        },
+      };
+    });
+  }
+
+  const updateActiveChat = (val: string) => {
+    console.log(val);
+    setMessages((prev) => ({ ...prev, activeChatId: val }))
+    setActiveChat(val)
+
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') sendMessage();
@@ -64,8 +139,22 @@ export default function Chatbot() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === 'application/pdf') {
-      setMessages((prev) => [...prev, { sender: 'user', text: `📄 Sent file: ${file.name}` }]);
+      // setMessages((prev) => [...prev, { sender: 'user', text: `📄 Sent file: ${file.name}` }]);
+      setMessages((prev) => ({
+        ...prev, chats: {
+          ...prev.chats,
+          [prev.activeChatId]: [
+            ...prev.chats[prev.activeChatId],
+            {
+              sender: 'user',
+              text: `📄 Sent file: ${file.name}`,
+              time: Date.now()
+            }
+          ]
+        }
+      })
 
+      );
       const formData = new FormData();
       formData.append('pdf', file);
       formData.append("socketId", socket.id ?? "");
@@ -91,7 +180,7 @@ export default function Chatbot() {
 
   return (
     <div className="flex items-center justify-between min-h-screen bg-[#eee0e0] dark:bg-gray-800">
-      <SideBar/>
+      <SideBar messages={messages} newChat={addNewChat} activeChatId={updateActiveChat} />
       <div className="flex flex-col w-full h-[700px] border border-gray-700 shadow-lg bg-[#eee0e0] dark:bg-gray-800 overflow-hidden">
 
         <div className="p-4 font-bold text-lg bg-orange-700 text-white flex justify-between">
@@ -106,7 +195,7 @@ export default function Chatbot() {
           </button>
         </div>
         <div className="flex-1 w-full md:w-2/3 m-auto overflow-y-auto p-4 space-y-3 bg-stone-100 dark:bg-gray-900 text-white">
-          {messages.map((msg, idx) => (
+          {messages?.chats[activeChat]?.map((msg, idx) => (
 
             <div
               key={idx}
