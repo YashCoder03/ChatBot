@@ -5,10 +5,11 @@ import type ChatState from "../interfaces/chats";
 interface sideBarProps {
   messages: ChatState;
   newChat: () => void;
-  activeChatId: (chatId: string) => void;
+  activeChatId: string;
+  setActiveChatId: (chatId: string) => void;
 }
 
-export default function SideBar({ messages, newChat, activeChatId }: sideBarProps) {
+export default function SideBar({ messages, newChat, activeChatId, setActiveChatId }: sideBarProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   const menuItems = [
@@ -31,7 +32,7 @@ export default function SideBar({ messages, newChat, activeChatId }: sideBarProp
           <Menu size={24} />
         </button>
       </div>
-      <div className="flex-1 flex flex-col gap-2 p-2">
+      <div className="flex-1 flex flex-col gap-2 p-2 w-40">
         {menuItems.map((item) => (
           <button
             key={item.name}
@@ -43,12 +44,16 @@ export default function SideBar({ messages, newChat, activeChatId }: sideBarProp
               <span className="transition-opacity duration-300 opacity-100">{item.name}</span>}
           </button>
         ))}
+        { isOpen && (
         <div className="mt-5 text-[#c3bbbb]">
           <h5>Chats</h5>
+          <div className="mt-3 ml-5">
           {Object.keys(messages?.chats ?? {}).map((chatId, index) => (
-            <li className="cursor-pointer" key={index} onClick={() => activeChatId(chatId)}>{chatId}</li>
+            <li className={`cursor-pointer list-none m-1 tracking-widest ${activeChatId === chatId && "font-bold" }`} key={index} onClick={() => setActiveChatId(chatId)}>{chatId}</li>
           ))}
+          </div>
         </div>
+)}
       </div>
 
     </div>
