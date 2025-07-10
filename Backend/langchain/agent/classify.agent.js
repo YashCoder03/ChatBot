@@ -2,14 +2,7 @@ import { StateGraph, END, START } from "@langchain/langgraph";
 import { classifyChain } from "../../handler/message.handler.js";
 import { handleGeneralQuestion } from "../../handler/message.handler.js";
 import getAnswer from "../chain/qa.chain.js";
-import { z } from "zod";
-
-const stateSchema = z.object({
-  message: z.string(),
-  id: z.string(),
-  category: z.string().optional(),
-  response: z.string().optional(),
-});
+import { stateSchema } from "../../zod/classify.zod.js";
 
 
 
