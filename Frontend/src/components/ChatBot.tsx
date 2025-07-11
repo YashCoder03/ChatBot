@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { SendHorizonal, Paperclip } from "lucide-react";
+import { SendHorizonal, Paperclip, Menu } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
@@ -24,6 +24,7 @@ const defaultMessage: ChatState = {
 
 export default function Chatbot() {
   const socketsRef = useRef<Record<string, Socket>>({});
+    const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     () =>
       localStorage.theme === "dark" ||
@@ -66,6 +67,14 @@ export default function Chatbot() {
     });
     socketsRef.current[chatId] = socket;
   };
+
+  useEffect(() => {
+  if (isSideBarOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+}, [isSideBarOpen]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -190,15 +199,20 @@ export default function Chatbot() {
   return (
     <div className="flex items-center justify-between min-h-screen bg-[#eee0e0] dark:bg-gray-800">
       <SideBar
+      isSideBarOpen = {isSideBarOpen}
+      setSideBarIsOpen = {(val) => setIsSideBarOpen(val)}
         messages={messages}
         newChat={addNewChat}
         activeChatId={activeChat}
         setActiveChatId={updateActiveChat}
       />
-      <div className="flex flex-col w-full h-[700px] border border-gray-700 shadow-lg bg-[#eee0e0] dark:bg-gray-800 overflow-hidden">
+      <div className="flex flex-col w-full min-h-screen border border-gray-700 shadow-lg bg-[#eee0e0] dark:bg-gray-800 overflow-hidden">
         <div className="p-4 font-bold text-lg bg-orange-700 text-white flex justify-between">
+          <button className="md:hidden" onClick={() => setIsSideBarOpen(!isSideBarOpen)}>
+            <Menu size={24} />
+          </button>
           <div>Chatbot</div>
-          <button onClick={() => setIsDark(!isDark)}>
+          <button className="cursor-pointer" onClick={() => setIsDark(!isDark)}>
             {isDark ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
           </button>
         </div>
