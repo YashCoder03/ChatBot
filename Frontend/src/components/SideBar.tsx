@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Menu, Settings, SquarePen } from "lucide-react";
 import type ChatState from "../interfaces/chats";
 
