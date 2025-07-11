@@ -6,10 +6,9 @@ html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: hidden; 
 }
 
-/* HTML: <div class="loader"></div> */
 .loaderWhite {
   width: 40px;
   aspect-ratio: 2;
