@@ -56,6 +56,7 @@ export const handleGeneralQuestion = async (message,id) => {
 
 export const getMemoryWrappedChain = (socketId) => {
   const baseChain = getBaseChain();
+  console.log(getSessionHistory(socketId))
   return new RunnableWithMessageHistory({
     runnable: baseChain,
     getMessageHistory: async () => getSessionHistory(socketId),

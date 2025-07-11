@@ -36,7 +36,6 @@ const classifyNode = async(state) => {
 }
 
 const generalNode = async(state) => {
-
     
     const answer = await handleGeneralQuestion(state.message,state.id);
     state.response = answer;
