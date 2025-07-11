@@ -6,8 +6,9 @@ import { MdOutlineLightMode } from "react-icons/md";
 import SideBar from "./SideBar";
 import type ChatState from "../interfaces/chats";
 
-const URL = "https://chatbot-production-2562.up.railway.app";
-// const URL = "http://localhost:5000";
+
+// const URL = "https://chatbot-production-2562.up.railway.app";
+const URL = "http://localhost:5000";
 
 const defaultMessage: ChatState = {
   activeChatId: "Chat_1",

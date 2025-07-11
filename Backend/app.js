@@ -4,10 +4,12 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import chatRoutes from "./routes/chat.routes.js";
 import dotenv from'dotenv'
+import { getHistoricalData } from "./handler/chartData.handler.js";
 dotenv.config()
 
 const app = express();
 
+// getHistoricalData()
 // Middleware
 app.use(cors());
 app.use(express.json());

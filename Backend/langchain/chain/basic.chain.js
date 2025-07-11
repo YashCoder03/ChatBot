@@ -1,23 +1,24 @@
-import { StringOutputParser } from "@langchain/core/output_parsers";
 import mistral from "../../config/mistral.config.js";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { RunnableSequence } from "@langchain/core/runnables";
+import { RunnableSequence, RunnableMap } from "@langchain/core/runnables";
+import { StructuredOutputParser } from "@langchain/core/output_parsers";
+import { answerSchema } from "../../zod/classify.zod.js";
+import { baseChainPrompt } from "../promptTemplate/prompt.template.js";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+
+const parser = new StructuredOutputParser(answerSchema);
 
 export const getBaseChain = () => {
-  const prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. Use the chat history and answer the question.
-
-        Chat History:
-        {history}
-
-        User: {input}
-        Assistant:
-        `);
   const baseChain = RunnableSequence.from([
-    prompt,
+    RunnableMap.from({
+      input: (input) => input.input,
+      history: (input) => input.history,
+      format_instructions: () => parser.getFormatInstructions(),
+    }),
+    baseChainPrompt,
     mistral,
-    new StringOutputParser()
-  ])
+    parser,
+    (parsedOutput) => JSON.stringify(parsedOutput, null, 2),
+  ]);
 
   return baseChain;
-}
+};
