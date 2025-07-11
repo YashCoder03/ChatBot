@@ -6,9 +6,8 @@ import { MdOutlineLightMode } from "react-icons/md";
 import SideBar from "./SideBar";
 import type ChatState from "../interfaces/chats";
 
-
-// const URL = "https://chatbot-production-2562.up.railway.app";
 const URL = import.meta.env.VITE_API_BASE_URL;
+
 const defaultMessage: ChatState = {
   activeChatId: "Chat_1",
   chats: {
