@@ -205,7 +205,7 @@ export default function Chatbot() {
         activeChatId={activeChat}
         setActiveChatId={updateActiveChat}
       />
-      <div className="flex flex-col w-full min-h-screen border border-gray-700 shadow-lg bg-[#eee0e0] dark:bg-gray-800 overflow-hidden">
+      <div className="flex flex-col w-full h-screen border border-gray-700 shadow-lg bg-[#eee0e0] dark:bg-gray-800 overflow-hidden">
         <div className="p-4 font-bold text-lg bg-orange-700 text-white flex justify-between">
           <button className="md:hidden" onClick={() => setIsSideBarOpen(!isSideBarOpen)}>
             <Menu size={24} />
