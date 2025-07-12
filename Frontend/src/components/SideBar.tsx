@@ -61,7 +61,7 @@ export default function SideBar({
   return (
     <div
       ref={sidebarRef}
-      className={`fixed md:relative z-50 p-1
+      className={`fixed min-h-screen md:relative z-50 p-1
           transition-all duration-300 ease-in-out
           ${isSideBarOpen ? "translate-x-0" : "-translate-x-full"} 
           md:translate-x-0
