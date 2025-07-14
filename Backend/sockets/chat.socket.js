@@ -2,7 +2,7 @@ import mistral from "../config/mistral.config.js"
 import getAnswer from "../langchain/chain/qa.chain.js";
 import deleteRecordsBySocketID from "../langchain/vectorstores/pineconde.delete.js";
 import { handleGeneralQuestion,classifyChain } from "../handler/message.handler.js";
-import { classifyAgent } from "../langchain/agent/classify.agent.js";
+import { agentGraph } from "../langchain/agent/classify.agent.js";
 import { getItineraryChain } from "../langchain/chain/travelAgent.chain.js";
 
 const chatHandlers = (socket) => {
@@ -17,7 +17,18 @@ const chatHandlers = (socket) => {
     }
     console.log(message);
     try {
-      const reply = await classifyAgent(message,socket.id);
+      const reply = await agentGraph.invoke({message,id : socket.id}, {
+    callbacks: [
+      {
+        handleLLMNewToken(token) {
+          socket.emit("botChunk", {reply : token});
+        },
+        handleLLMEnd() {
+          socket.emit("botEnd");
+        },
+      },
+    ],
+  });
       // let result ;
       // const type = await classifyMessage(message);
       // if (type === "PDF") {
@@ -26,7 +37,7 @@ const chatHandlers = (socket) => {
       //   result = await  handleGeneralQuestion(message,socket.id);
       // }
       // const result = await mistral.invoke(message);
-      socket.emit("bot_message", { reply: reply });
+      // socket.emit("bot_message", { reply: reply });
     } catch (error) {
       console.error("MistralAI Error:", error);
       socket.emit("bot_message", { reply: "⚠️ Something went wrong with the AI" });
@@ -56,7 +67,22 @@ const chatHandlers = (socket) => {
     console.log(JSON.stringify(structured));
     socket.emit("bot_message", { reply: JSON.stringify(structured) });
     });
-
+  
+  socket.on("test",async(data) => {
+    console.log(data);  
+    await mistral.invoke([{ role: "user", content: data }], {
+    callbacks: [
+      {
+        handleLLMNewToken(token) {
+          socket.emit("botChunk", {reply : token});
+        },
+        handleLLMEnd() {
+          socket.emit("botEnd");
+        },
+      },
+    ],
+  });
+  })
   socket.on("disconnect", async() => {
     console.log(await deleteRecordsBySocketID(socket.id));
     console.log(`🔴 Client disconnected: ${socket.id}`);

@@ -7,7 +7,7 @@ import { stateSchema } from "../../zod/classify.zod.js";
 
 
 
-let agentGraph;
+export let agentGraph;
 export const initclassifyAgent = async() => {
 
     const graph = new StateGraph(stateSchema);
@@ -24,10 +24,7 @@ export const initclassifyAgent = async() => {
     agentGraph = graph.compile();
 }
 
-export const classifyAgent = async(message,id) =>{
-    const res = await agentGraph.invoke({message,id});
-    return res.response;
-}
+
 
 const classifyNode = async(state) => {
     const answer = await classifyChain(state.message,state.id);

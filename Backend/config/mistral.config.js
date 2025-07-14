@@ -11,6 +11,7 @@ const mistral = new ChatGroq({
   apiKey: process.env.GROK_API_KEY,
   model: "llama-3.3-70b-versatile",
   temperature: 0.7,
+  streaming : true
 });
 
 export default mistral;
