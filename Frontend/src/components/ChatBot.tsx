@@ -68,6 +68,12 @@ export default function Chatbot() {
   };
 
   useEffect(() => {
+  if (window.innerWidth >= 768) {
+    setIsSideBarOpen(!isSideBarOpen);
+  }
+}, []);
+
+  useEffect(() => {
   if (isSideBarOpen) {
     document.body.style.overflow = "hidden";
   } else {
@@ -196,7 +202,7 @@ export default function Chatbot() {
   }, [messages]);
 
   return (
-    <div className="flex items-center justify-between min-h-screen bg-[#eee0e0] dark:bg-gray-800">
+    <div style={{height: '100dvh'}} className="flex items-center justify-between bg-[#eee0e0] dark:bg-gray-800">
       <SideBar
       isSideBarOpen = {isSideBarOpen}
       setSideBarIsOpen = {(val) => setIsSideBarOpen(val)}
@@ -205,8 +211,8 @@ export default function Chatbot() {
         activeChatId={activeChat}
         setActiveChatId={updateActiveChat}
       />
-      <div className="flex flex-col w-full h-screen border border-gray-700 shadow-lg bg-[#eee0e0] dark:bg-gray-800 overflow-hidden">
-        <div className="p-4 font-bold text-lg bg-orange-700 text-white flex justify-between">
+      <div style={{height: '100dvh'}} className="relative flex flex-col w-full  border border-gray-700 shadow-lg bg-stone-100 dark:bg-[#211f1f] overflow-hidden">
+        <div className="p-4 font-bold text-lg bg-stone-100  text-[#353535] dark:bg-[#211f1f] dark:text-white flex justify-between md:hidden">
           <button className="md:hidden" onClick={() => setIsSideBarOpen(!isSideBarOpen)}>
             <Menu size={24} />
           </button>
@@ -215,7 +221,11 @@ export default function Chatbot() {
             {isDark ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
           </button>
         </div>
-        <div className="flex-1 w-full md:w-2/3 m-auto overflow-y-auto p-4 space-y-3 bg-stone-100 dark:bg-gray-900 text-white">
+        <div className="hidden md:block absolute top-5 left-5 text-[#353535] dark:text-white font-bold">Chatbot</div>
+        <button className="hidden md:block absolute top-5 right-10 text-[#353535] dark:text-white" onClick={() => setIsDark(!isDark)}>
+            {isDark ? <MdOutlineLightMode size={18}/> : <MdOutlineDarkMode size={18}/>}
+          </button>
+        <div className="flex-1 w-screen md:w-1/2 m-auto overflow-y-auto scrollbar-hide p-4 space-y-3 bg-stone-100 dark:bg-[#211f1f] text-white">
           {messages?.chats[activeChat]?.map((msg, idx) => (
             <div
               key={idx}
@@ -224,10 +234,10 @@ export default function Chatbot() {
               }`}
             >
               <div
-                className={` px-4 py-2 rounded-2xl max-w-[70%] break-words ${
+                className={` px-4 py-2 rounded-2xl  break-words text-justify ${
                   msg.sender === "user"
-                    ? "bg-orange-600 text-white "
-                    : `${isDark ? "bg-gray-700" : "bg-[#867d7d]"} text-white`
+                    ? "bg-orange-600 text-white max-w-[70%] "
+                    : `${isDark ? "bg-[#211f1f]" : "bg-[#867d7d]"} text-white`
                 }`}
               >
                 {msg.text}
@@ -242,14 +252,14 @@ export default function Chatbot() {
             ))}
           <div ref={chatEndRef} />
         </div>
-        <div className="pb-4 px-2 w-full md:w-2/3 m-auto border-gray-700 bg-stone-100 dark:bg-gray-900 flex gap-2 items-center">
+        <div className="h-12 rounded-lg px-2 mb-2 w-full md:w-1/2 m-auto border-gray-700 bg-stone-100 dark:bg-[#3b3b3b] flex gap-2 items-center">
           <input
             type="text"
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 px-4 py-2 bg-white text:black dark:bg-gray-700 dark:text-white border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 border-none py-2 bg-white text:black dark:bg-[#3b3b3b] dark:text-white border border-gray-600 rounded-full focus:outline-none"
           />
           <label className="cursor-pointer">
             <input
@@ -258,7 +268,7 @@ export default function Chatbot() {
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-full">
+            <div className="bg-[#070707] hover:bg-gray-600 text-white p-2 rounded-full">
               <Paperclip size={20} />
             </div>
           </label>

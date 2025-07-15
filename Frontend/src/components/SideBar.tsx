@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Menu, Settings, SquarePen } from "lucide-react";
 import type ChatState from "../interfaces/chats";
+import { FaInfinity } from "react-icons/fa";
 
 interface sideBarProps {
   isSideBarOpen: boolean;
@@ -31,7 +32,7 @@ export default function SideBar({
       if (
         sidebarRef.current &&
         !sidebarRef.current.contains(event.target as Node) &&
-        window.innerWidth < 768 // Only on mobile
+        window.innerWidth < 768
       ) {
         setSideBarIsOpen(false);
       }
@@ -60,21 +61,21 @@ export default function SideBar({
 
   return (
     <div
-      ref={sidebarRef}
-      className={`fixed min-h-screen md:relative z-50 p-1
+      ref={sidebarRef} style={{minHeight: '100dvh'}}
+      className={`fixed md:relative z-50 p-1
           transition-all duration-300 ease-in-out
           ${isSideBarOpen ? "translate-x-0" : "-translate-x-full"} 
           md:translate-x-0
           ${isSideBarOpen ? "w-64" : "w-16"} 
           ${
             isSideBarOpen && "shadow-lg"
-          } md:block min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white flex flex-col transition-all duration-300  ${
+          } md:block min-h-screen bg-white text-black dark:bg-[#070707] dark:text-white flex flex-col transition-all duration-300  ${
         isSideBarOpen ? "w-60" : "w-16"
       }`}
     >
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        <h1 className="text-xl font-bold transition-opacity duration-300 opacity-100">
-          {isSideBarOpen && "ChatBot"}
+        <h1 className=" transition-opacity duration-300 opacity-100">
+          {isSideBarOpen && <FaInfinity size={20}/>}
         </h1>
         <button className="cursor-pointer" onClick={() => setSideBarIsOpen(!isSideBarOpen)}>
           <Menu size={24} />
