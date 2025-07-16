@@ -26,6 +26,10 @@ export default function SideBar({
   ];
 
   const sidebarRef = useRef<HTMLDivElement>(null);
+//   const updateChatName = "";
+// useEffect(() => {
+//   updateChatName = 
+// },[messages])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -108,7 +112,7 @@ export default function SideBar({
                   key={index}
                   onClick={() => handleChatOnClick(chatId)}
                 >
-                  {chatId}
+                  {messages.chats[chatId].name}
                 </li>
               ))}
             </div>
