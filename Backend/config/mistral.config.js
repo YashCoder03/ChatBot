@@ -9,7 +9,8 @@ import { ChatGroq } from "@langchain/groq"
 // });
 const mistral = new ChatGroq({
   apiKey: process.env.GROK_API_KEY,
-  model: "llama-3.3-70b-versatile",
+  // model: "llama-3.3-70b-versatile",
+  model: "meta-llama/llama-4-scout-17b-16e-instruct",
   temperature: 0.7,
 });
 
