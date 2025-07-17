@@ -46,16 +46,16 @@ export const answerSchema = z.object({
           .describe("Bullet point list of related items"),
 
         code: z.object({
-            heading: z.string().describe("Title of the code snippet"),
+            heading: z.string().describe("Title of the code snippet").optional(),
             snippet: z
               .string()
-              .describe("Full raw code as a single string, properly formatted"),
+              .describe("Full raw code as a single string, properly formatted").optional(),
             language: z
               .string()
-              .describe("Language of the code, e.g., 'js', 'python'"),
+              .describe("Language of the code, e.g., 'js', 'python'").optional(),
             summary: z
               .string()
-              .describe("Short summary of what the code does")
+              .describe("Short summary of what the code does").optional()
           })
           .optional()
       })

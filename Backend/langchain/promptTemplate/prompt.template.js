@@ -32,7 +32,7 @@ Follow these exact instructions to format your reply:
 
 1. Output must be a **valid JSON object** that conforms strictly to the following structure:
 
-- chatHeading (string, optional)
+- chatHeading (string): A short 2 Word Heading.
 - header (string, optional):  A short, clear main title for your response (1 short sentence).
 - summary (string, optional): A one-line TL;DR of the entire answer. Leave empty if the answer is short or doesn't need a summary.
 - content (array of objects): Each object should include:
