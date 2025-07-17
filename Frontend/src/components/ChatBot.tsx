@@ -4,26 +4,29 @@ import { io, Socket } from "socket.io-client";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import SideBar from "./SideBar";
-import type ChatState from "../interfaces/chats";
+import type ChatState from "../interfaces/IChats";
 
 const URL = import.meta.env.VITE_API_BASE_URL;
 
 const defaultMessage: ChatState = {
   activeChatId: "Chat_1",
   chats: {
-    Chat_1: [
-      {
-        sender: "bot",
-        text: "Hello! How can I help you today?",
-        time: Date.now(),
-      },
-    ],
+    Chat_1: {
+      name: "New Chat",
+      messages: [
+        {
+          sender: "bot",
+          text: "Hello! How can I help you today?",
+          time: Date.now(),
+        },
+      ],
+    },
   },
 };
 
 export default function Chatbot() {
   const socketsRef = useRef<Record<string, Socket>>({});
-    const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     () =>
       localStorage.theme === "dark" ||
@@ -35,32 +38,51 @@ export default function Chatbot() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<any>(null);
   const [activeChat, setActiveChat] = useState(messages.activeChatId);
+  let newChatName = useRef("New Chat");
 
   const createSocketForChat = (chatId: string) => {
     const socket: Socket = io(URL, { transports: ["websocket"] });
     socket.on("connect", () => {
       console.log(`Socket connected for ${chatId}`);
-    }); 
+    });
     socket.on("bot_message", (data: any) => {
       if (!socket.connected) {
         alert("App Crashed");
       }
+
+      const jsonObject = JSON.parse(data.reply);
+
       setLoading(false);
-      setMessages((prev) => ({
-        ...prev,
-        chats: {
-          ...prev.chats,
-          [chatId]: [
-            ...prev.chats[chatId],
-            {
-              sender: "bot",
-              text: data.reply,
-              time: Date.now(),
+      setMessages((prev) => {
+        const shouldSetName = prev.chats[prev.activeChatId].name === "New Chat";
+
+        const updatedName = shouldSetName
+          ? jsonObject.chatHeading !== ""
+            ? jsonObject.chatHeading
+            : "New Chat"
+          : newChatName.current;
+
+        return {
+          ...prev,
+          chats: {
+            ...prev.chats,
+            [chatId]: {
+              ...prev.chats[chatId],
+              name: updatedName,
+              messages: [
+                ...prev.chats[chatId].messages,
+                {
+                  sender: "bot",
+                  text: data.reply,
+                  time: Date.now(),
+                },
+              ],
             },
-          ],
-        },
-      }));
+          },
+        };
+      });
     });
+
     socket.on("disconnect", () => {
       console.log(`Socket disconnected for ${chatId}`);
     });
@@ -68,18 +90,18 @@ export default function Chatbot() {
   };
 
   useEffect(() => {
-  if (window.innerWidth >= 768) {
-    setIsSideBarOpen(!isSideBarOpen);
-  }
-}, []);
+    if (window.innerWidth >= 768) {
+      setIsSideBarOpen(!isSideBarOpen);
+    }
+  }, []);
 
   useEffect(() => {
-  if (isSideBarOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-  }
-}, [isSideBarOpen]);
+    if (isSideBarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isSideBarOpen]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -107,14 +129,18 @@ export default function Chatbot() {
       ...prev,
       chats: {
         ...prev.chats,
-        [prev.activeChatId]: [
+        [prev.activeChatId]: {
           ...prev.chats[prev.activeChatId],
-          {
-            sender: "user",
-            text: input,
-            time: Date.now(),
-          },
-        ],
+          name: newChatName.current,
+          messages: [
+            ...prev.chats[prev.activeChatId].messages,
+            {
+              sender: "user",
+              text: input,
+              time: Date.now(),
+            },
+          ],
+        },
       },
     }));
     const currentSocket = socketsRef.current[messages.activeChatId];
@@ -130,26 +156,32 @@ export default function Chatbot() {
       let newChatId = `Chat_${Object.keys(prev.chats).length + 1}`;
       setActiveChat(newChatId);
       createSocketForChat(newChatId);
-
+      newChatName.current = "New Chat";
       return {
         ...prev,
         activeChatId: newChatId,
         chats: {
           ...prev.chats,
-          [newChatId]: [
-            {
-              sender: "bot",
-              text: "Hello! How can I help you today?",
-              time: Date.now(),
-            },
-          ],
+          [newChatId]: {
+            name: newChatName.current,
+            messages: [
+              {
+                sender: "bot",
+                text: "Hello! How can I help you today?",
+                time: Date.now(),
+              },
+            ],
+          },
         },
       };
     });
   };
 
   const updateActiveChat = (val: string) => {
-    setMessages((prev) => ({ ...prev, activeChatId: val }));
+    setMessages((prev) => {
+      newChatName.current = prev.chats[val].name;
+      return { ...prev, activeChatId: val };
+    });
     setActiveChat(val);
   };
 
@@ -164,17 +196,19 @@ export default function Chatbot() {
         ...prev,
         chats: {
           ...prev.chats,
-          [prev.activeChatId]: [
-            ...prev.chats[prev.activeChatId],
-            {
-              sender: "user",
-              text: `📄 Sent file: ${file.name}`,
-              time: Date.now(),
-            },
-          ],
+          [prev.activeChatId]: {
+            ...prev.chats[prev.activeChatId], // spread to keep name
+            messages: [
+              ...prev.chats[prev.activeChatId].messages,
+              {
+                sender: "user",
+                text: `📄 Sent file: ${file.name}`,
+                time: Date.now(),
+              },
+            ],
+          },
         },
       }));
-
       const formData = new FormData();
       formData.append("pdf", file);
 
@@ -202,18 +236,27 @@ export default function Chatbot() {
   }, [messages]);
 
   return (
-    <div style={{height: '100dvh'}} className="flex items-center justify-between bg-[#eee0e0] dark:bg-gray-800">
+    <div
+      style={{ height: "100dvh" }}
+      className="flex items-center justify-between bg-[#eee0e0] dark:bg-gray-800"
+    >
       <SideBar
-      isSideBarOpen = {isSideBarOpen}
-      setSideBarIsOpen = {(val) => setIsSideBarOpen(val)}
+        isSideBarOpen={isSideBarOpen}
+        setSideBarIsOpen={(val) => setIsSideBarOpen(val)}
         messages={messages}
         newChat={addNewChat}
         activeChatId={activeChat}
         setActiveChatId={updateActiveChat}
       />
-      <div style={{height: '100dvh'}} className="relative flex flex-col w-full  border border-gray-700 shadow-lg bg-stone-100 dark:bg-[#211f1f] overflow-hidden">
+      <div
+        style={{ height: "100dvh" }}
+        className="relative flex flex-col w-full  border border-gray-700 shadow-lg bg-stone-100 dark:bg-[#211f1f] overflow-hidden"
+      >
         <div className="p-4 font-bold text-lg bg-stone-100  text-[#353535] dark:bg-[#211f1f] dark:text-white flex justify-between md:hidden">
-          <button className="md:hidden" onClick={() => setIsSideBarOpen(!isSideBarOpen)}>
+          <button
+            className="md:hidden"
+            onClick={() => setIsSideBarOpen(!isSideBarOpen)}
+          >
             <Menu size={24} />
           </button>
           <div>Chatbot</div>
@@ -221,12 +264,21 @@ export default function Chatbot() {
             {isDark ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
           </button>
         </div>
-        <div className="hidden md:block absolute top-5 left-5 text-[#353535] dark:text-white font-bold">Chatbot</div>
-        <button className="hidden md:block absolute top-5 right-10 text-[#353535] dark:text-white" onClick={() => setIsDark(!isDark)}>
-            {isDark ? <MdOutlineLightMode size={18}/> : <MdOutlineDarkMode size={18}/>}
-          </button>
+        <div className="hidden md:block absolute top-5 left-5 text-[#353535] dark:text-white font-bold">
+          Chatbot
+        </div>
+        <button
+          className="hidden md:block absolute top-5 right-10 text-[#353535] dark:text-white"
+          onClick={() => setIsDark(!isDark)}
+        >
+          {isDark ? (
+            <MdOutlineLightMode size={18} />
+          ) : (
+            <MdOutlineDarkMode size={18} />
+          )}
+        </button>
         <div className="flex-1 w-screen md:w-1/2 m-auto overflow-y-auto scrollbar-hide p-4 space-y-3 bg-stone-100 dark:bg-[#211f1f] text-white">
-          {messages?.chats[activeChat]?.map((msg, idx) => (
+          {messages?.chats[activeChat]?.messages.map((msg, idx) => (
             <div
               key={idx}
               className={`flex  ${
