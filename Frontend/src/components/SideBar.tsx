@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Menu, Settings, SquarePen } from "lucide-react";
-import type ChatState from "../interfaces/chats";
+import type ChatState from "../interfaces/IChats";
 import { FaInfinity } from "react-icons/fa";
 
 interface sideBarProps {
@@ -26,10 +26,10 @@ export default function SideBar({
   ];
 
   const sidebarRef = useRef<HTMLDivElement>(null);
-//   const updateChatName = "";
-// useEffect(() => {
-//   updateChatName = 
-// },[messages])
+  //   const updateChatName = "";
+  // useEffect(() => {
+  //   updateChatName =
+  // },[messages])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -53,19 +53,24 @@ export default function SideBar({
 
   const handleBtnClick = (btnName: string): void => {
     if (btnName === "New Chat") {
-      console.log("new chat clicked");
       newChat();
+      if (window.innerWidth < 768) {
+        setSideBarIsOpen(false);
+      }
     }
   };
 
   const handleChatOnClick = (chatId: string) => {
     setActiveChatId(chatId);
-    setSideBarIsOpen(false);
+    if (window.innerWidth < 768) {
+      setSideBarIsOpen(false);
+    }
   };
 
   return (
     <div
-      ref={sidebarRef} style={{minHeight: '100dvh'}}
+      ref={sidebarRef}
+      style={{ minHeight: "100dvh" }}
       className={`fixed md:relative z-50 p-1
           transition-all duration-300 ease-in-out
           ${isSideBarOpen ? "translate-x-0" : "-translate-x-full"} 
@@ -79,13 +84,16 @@ export default function SideBar({
     >
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <h1 className=" transition-opacity duration-300 opacity-100">
-          {isSideBarOpen && <FaInfinity size={20}/>}
+          {isSideBarOpen && <FaInfinity size={20} />}
         </h1>
-        <button className="cursor-pointer" onClick={() => setSideBarIsOpen(!isSideBarOpen)}>
+        <button
+          className="cursor-pointer"
+          onClick={() => setSideBarIsOpen(!isSideBarOpen)}
+        >
           <Menu size={24} />
         </button>
       </div>
-      <div className="flex-1 flex flex-col gap-2 p-2 w-40">
+      <div className="flex-1 flex flex-col gap-2 p-2 w-full">
         {menuItems.map((item) => (
           <button
             key={item.name}
@@ -102,11 +110,11 @@ export default function SideBar({
         ))}
         {isSideBarOpen && (
           <div className="mt-5 text-[#c3bbbb]">
-            <h5>Chats</h5>
-            <div className="mt-3 ml-5">
+            <h5 className="mb-6">Chats</h5>
+            <div>
               {Object.keys(messages?.chats ?? {}).map((chatId, index) => (
                 <li
-                  className={`cursor-pointer list-none m-1 tracking-widest ${
+                  className={`cursor-pointer list-none text-sm/2 my-4 tracking-widest ${
                     activeChatId === chatId && "font-bold"
                   }`}
                   key={index}

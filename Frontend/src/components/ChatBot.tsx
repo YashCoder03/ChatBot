@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import SideBar from "./SideBar";
-import type ChatState from "../interfaces/chats";
+import type ChatState from "../interfaces/IChats";
 
 const URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -38,13 +38,7 @@ export default function Chatbot() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<any>(null);
   const [activeChat, setActiveChat] = useState(messages.activeChatId);
-  // const [newChatName, setNewChatName] = useState("New Chat");
   let newChatName = useRef("New Chat");
-
-  useEffect(() => {
-    console.log(messages);
-    console.log("newChatName", newChatName);
-  });
 
   const createSocketForChat = (chatId: string) => {
     const socket: Socket = io(URL, { transports: ["websocket"] });
@@ -60,17 +54,13 @@ export default function Chatbot() {
 
       setLoading(false);
       setMessages((prev) => {
-        const shouldSetName = prev.chats[prev.activeChatId].messages.length === 2;
-        const updatedName = shouldSetName
-          ? jsonObject.chatHeading
-          : newChatName.current;
-console.log(activeChat);
+        const shouldSetName = prev.chats[prev.activeChatId].name === "New Chat";
 
-        if (shouldSetName) {
-          console.log("updateed nameeee");
-          
-          newChatName.current= jsonObject.chatHeading; // ✅ this will still be useful elsewhere
-        }
+        const updatedName = shouldSetName
+          ? jsonObject.chatHeading !== ""
+            ? jsonObject.chatHeading
+            : "New Chat"
+          : newChatName.current;
 
         return {
           ...prev,
@@ -188,7 +178,10 @@ console.log(activeChat);
   };
 
   const updateActiveChat = (val: string) => {
-    setMessages((prev) => ({ ...prev, activeChatId: val }));
+    setMessages((prev) => {
+      newChatName.current = prev.chats[val].name;
+      return { ...prev, activeChatId: val };
+    });
     setActiveChat(val);
   };
 
