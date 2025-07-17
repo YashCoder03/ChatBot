@@ -62,6 +62,10 @@ export default function Chatbot() {
             : "New Chat"
           : newChatName.current;
 
+        if (shouldSetName) {
+          newChatName.current = updatedName;
+        }
+
         return {
           ...prev,
           chats: {
