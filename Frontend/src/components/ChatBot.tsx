@@ -58,7 +58,7 @@ export default function Chatbot() {
 
         const updatedName = shouldSetName
           ? jsonObject.chatHeading !== ""
-            ? jsonObject.chatHeading
+            ? jsonObject.header
             : "New Chat"
           : newChatName.current;
 
