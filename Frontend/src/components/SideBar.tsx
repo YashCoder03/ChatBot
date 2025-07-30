@@ -114,7 +114,7 @@ export default function SideBar({
             <div>
               {Object.keys(messages?.chats ?? {}).map((chatId, index) => (
                 <li
-                  className={`cursor-pointer list-none text-sm/2 my-4 tracking-widest ${
+                  className={`cursor-pointer list-none text-sm/3 my-4 tracking-widest ${
                     activeChatId === chatId && "font-bold"
                   }`}
                   key={index}
