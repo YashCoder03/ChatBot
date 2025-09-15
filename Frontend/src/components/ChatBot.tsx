@@ -5,6 +5,7 @@ import { MdOutlineDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import SideBar from "./SideBar";
 import type ChatState from "../interfaces/IChats";
+import BotMessage from "./BotMessage";
 
 const URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -16,7 +17,9 @@ const defaultMessage: ChatState = {
       messages: [
         {
           sender: "bot",
-          text: "Hello! How can I help you today?",
+          text: JSON.stringify({
+            content: ["Hello! How can I help you today?"],
+          }),
           time: Date.now(),
         },
       ],
@@ -171,7 +174,9 @@ export default function Chatbot() {
             messages: [
               {
                 sender: "bot",
-                text: "Hello! How can I help you today?",
+                text: JSON.stringify({
+                  content: ["Hello! How can I help you today?"],
+                }),
                 time: Date.now(),
               },
             ],
@@ -293,10 +298,11 @@ export default function Chatbot() {
                 className={` px-4 py-2 rounded-2xl  break-words text-justify ${
                   msg.sender === "user"
                     ? "bg-orange-600 text-white max-w-[70%] "
-                    : `${isDark ? "bg-[#211f1f]" : "bg-[#867d7d]"} text-white`
+                    : `${isDark ? "text-white" : "text-black"}`
                 }`}
               >
-                {msg.text}
+                {msg.sender === "user" && msg.text}
+                {msg.sender === "bot" && <BotMessage text={msg.text} />}
               </div>
             </div>
           ))}
